@@ -2,6 +2,20 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+import os
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
+
+scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+creds = ServiceAccountCredentials.from_json_keyfile_name("contact-450111-f4a3ce881c14.json", scope)
+client = gspread.authorize(creds)
+
+SHEET_NAME = "Sheet1"
+sheet = client.open('Sheet1').sheet1
+
+def save_contact_info(name,email,message):
+    new_entry = [name,email,message]
+    sheet.append_row(new_entry)
 
 st.title("Data Dashboard")
 st.subheader("Basic Analysis of your Data")
@@ -106,3 +120,20 @@ if uploaded_file is not None:
 
 else:
     st.write('Waiting for **CSV** file to upload...')
+
+
+st.subheader("Contact me")
+
+with st.form(key='contact_form'):
+    name = st.text_input('Name')
+    email = st.text_input('Email address')
+    message = st.text_area('Message')
+
+    submit_button = st.form_submit_button(label='Send Message')
+
+    if submit_button:
+        if name and email and message:
+            save_contact_info(name, email, message)
+            st.success("Thank you for reaching out! I will review your message soon")
+        else:
+            st.error("Please fill all the fields before submitting.")

@@ -53,6 +53,8 @@ if uploaded_file is not None:
     if st.button("Fill Null Values"):
         st.write('Filling missing values...')
 
+        cleaned_df = st.session_state.cleaned_df
+
         # Fill numeric columns with median
         for col in num.columns:
             if num_null[col] != 0:

@@ -1,4 +1,6 @@
-streamlit
-pandas
-matplotlib
-seaborn
+streamlit==1.17.0
+pandas==1.4.2
+matplotlib==3.5.2
+seaborn==0.11.2
+gspread==5.4.0
+oauth2client==4.1.3

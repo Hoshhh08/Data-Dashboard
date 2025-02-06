@@ -50,32 +50,39 @@ if uploaded_file is not None:
     st.write("Categorical Columns Null Count:")
     st.write(cat_null)
 
+    if 'cleaned_df' not in st.session_state:
+        st.session_state.cleaned_df = df.copy()
+
+    num = df.select_dtypes(exclude='object')
+    cat = df.select_dtypes(include='object')
+
+    num_null = num.isnull().sum()
+    cat_null = cat.isnull().sum()
+
+    st.write("Numeric Columns Null Count:")
+    st.write(num_null)
+    
+    st.write("Categorical Columns Null Count:")
+    st.write(cat_null)
+
     if st.button("Fill Null Values"):
         st.write('Filling missing values...')
 
-        cleaned_df = st.session_state.cleaned_df
+        # Fill numeric columns with median
         for col in num.columns:
-            if num_null[col] != 0:  # Only fill if there are null values
-                if col in cleaned_df.columns:
-                    median_value = num[col].median()
-                    cleaned_df[col].fillna(median_value, inplace=True)
-                    st.write(f"Filled {col} with median value {median_value}")
-                else:
-                    st.error(f"Column {col} not found in cleaned DataFrame.")
-        
+            if num_null[col] != 0:
+                median_value = num[col].median()
+                st.session_state.cleaned_df[col].fillna(median_value, inplace=True)
+
+        # Fill categorical columns with mode
         for col in cat.columns:
-            if cat_null[col] != 0:  # Only fill if there are null value
-                if col in cleaned_df.columns:
-                    mode_value = cat[col].mode()[0]  # Most frequent value
-                    cleaned_df[col].fillna(mode_value, inplace=True)
-                    st.write(f"Filled {col} with mode value {mode_value}")
-                else:
-                    st.error(f"Column {col} not found in cleaned DataFrame.")
+            if cat_null[col] != 0:
+                mode_value = cat[col].mode()[0]  # Most frequent value
+                st.session_state.cleaned_df[col].fillna(mode_value, inplace=True)
 
-        # Display the updated count of null values
         st.write("Updated Null Values Count:")
-        st.write(cleaned_df.isnull().sum())
-
+        st.write(st.session_state.cleaned_df.isnull().sum())
+    
     st.subheader("Filter Data")
     columns = df.columns.to_list()
     selected_columns = st.selectbox("Choose column to filter by",columns)

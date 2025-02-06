@@ -138,7 +138,7 @@ if uploaded_file is not None:
     )
 
 else:
-    st.write('Waiting for **CSV** file to upload...')
+    st.write('Waiting for **data** file to upload...')
 
 
 st.subheader("Contact me")

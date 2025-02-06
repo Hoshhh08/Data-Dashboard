@@ -21,11 +21,14 @@ def save_contact_info(name,email,message):
 st.title("Data Dashboard")
 st.subheader("Basic Analysis of your Data")
 
-uploaded_file = st.file_uploader("Choose **CSV** data to upload:", type='csv')
+uploaded_file = st.file_uploader("Choose **CSV** or **XLSX** data to upload:", type=['csv','xlsx'])
 
 if uploaded_file is not None:
-    df = pd.read_csv(uploaded_file)
-
+    if uploaded_file.name.endswith('.csv'):
+        df = pd.read_csv(uploaded_file)
+    elif uploaded_file.name.endswith('.xlsx'):
+        df = pd.read_excel(uploaded_file)
+        
     if df.columns[0] == 'Unnamed: 0':
         df.set_index(df.columns[0], inplace=True)
 

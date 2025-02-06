@@ -54,21 +54,27 @@ if uploaded_file is not None:
         st.write('Filling missing values...')
 
         cleaned_df = st.session_state.cleaned_df
-
-        # Fill numeric columns with median
         for col in num.columns:
-            if num_null[col] != 0:
-                median_value = num[col].median()
-                st.session_state.cleaned_df[col].fillna(median_value, inplace=True)
-
-        # Fill categorical columns with mode
+            if num_null[col] != 0:  # Only fill if there are null values
+                if col in cleaned_df.columns:
+                    median_value = num[col].median()
+                    cleaned_df[col].fillna(median_value, inplace=True)
+                    st.write(f"Filled {col} with median value {median_value}")
+                else:
+                    st.error(f"Column {col} not found in cleaned DataFrame.")
+        
         for col in cat.columns:
-            if cat_null[col] != 0:
-                mode_value = cat[col].mode()[0]  # Most frequent value
-                st.session_state.cleaned_df[col].fillna(mode_value, inplace=True)
+            if cat_null[col] != 0:  # Only fill if there are null value
+                if col in cleaned_df.columns:
+                    mode_value = cat[col].mode()[0]  # Most frequent value
+                    cleaned_df[col].fillna(mode_value, inplace=True)
+                    st.write(f"Filled {col} with mode value {mode_value}")
+                else:
+                    st.error(f"Column {col} not found in cleaned DataFrame.")
 
+        # Display the updated count of null values
         st.write("Updated Null Values Count:")
-        st.write(st.session_state.cleaned_df.isnull().sum())
+        st.write(cleaned_df.isnull().sum())
 
     st.subheader("Filter Data")
     columns = df.columns.to_list()
